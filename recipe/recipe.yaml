@@ -1,5 +1,5 @@
 context:
-  version: "1.13.0"
+  version: "1.14.0"
 
 package:
   name: kitops
@@ -7,11 +7,11 @@ package:
 
 source:
   url: https://github.com/kitops-ml/kitops/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: d71e7d77aa9100eea1162daa6c64ea7a911d2f13c4507ed0fd006a0d85a6b6b9
+  sha256: f421f9dd99430020da482faaf0c4752340c449660a48a8b26e3322a4b739514f
   target_directory: src
 
 build:
-  number: 2
+  number: 0
   script:
     - cd src
     - go-licenses save . --save_path ../library_licenses
@@ -66,7 +66,8 @@ tests:
 about:
   homepage: https://kitops.ml
   summary: An open source MLOps tool for packaging, versioning, and sharing AI/ML projects
-  description: "KitOps is an open source tool that allows to package, version, share, and\ndeploy AI/ML models and their associated artifacts using familiar DevOps practices and\nOCI standards. It facilitates collaborative work on self-hosted AI/ML models and makes\nsharing, automating, and deploying those models as simple as managing containerized apps. \n"
+  description: "KitOps is an open source tool that allows to package, version, share, and\ndeploy AI/ML models and their associated artifacts using familiar DevOps practices and\nOCI standards. It facilitates collaborative work on self-hosted AI/ML models and makes\nsharing, automating, and deploying those models as simple
+    as managing containerized apps. \n"
   license: Apache-2.0
   license_file:
     - src/LICENSE
