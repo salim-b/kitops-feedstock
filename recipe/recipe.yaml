@@ -1,5 +1,5 @@
 context:
-  version: "1.14.0"
+  version: "1.15.0"
 
 package:
   name: kitops
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/kitops-ml/kitops/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: f421f9dd99430020da482faaf0c4752340c449660a48a8b26e3322a4b739514f
+  sha256: 956a3d526eb45848e66a49089fcc7867c7df4c2e019a3126219e8f1d7163f7e5
   target_directory: src
 
 build:
