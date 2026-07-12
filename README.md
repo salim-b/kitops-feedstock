@@ -3,7 +3,7 @@ About kitops-feedstock
 
 Feedstock license: [BSD-3-Clause](https://github.com/conda-forge/kitops-feedstock/blob/main/LICENSE.txt)
 
-Home: https://kitops.ml/
+Home: https://kitops.org/
 
 Package license: Apache-2.0
 
@@ -11,10 +11,13 @@ Summary: An open source MLOps tool for packaging, versioning, and sharing AI/ML 
 
 Development: https://github.com/kitops-ml/kitops
 
+Documentation: https://kitops.org/docs
+
 KitOps is an open source tool that allows to package, version, share, and
-deploy AI/ML models and their associated artifacts using familiar DevOps practices and
-OCI standards. It facilitates collaborative work on self-hosted AI/ML models and makes
-sharing, automating, and deploying those models as simple as managing containerized apps.
+deploy AI/ML models and their associated artifacts using familiar DevOps
+practices and OCI standards. It facilitates collaborative work on
+self-hosted AI/ML models and makes sharing, automating, and deploying those
+models as simple as managing containerized apps.
 
 Current build status
 ====================
