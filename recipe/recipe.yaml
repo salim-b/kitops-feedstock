@@ -12,38 +12,35 @@ source:
 build:
   number: 0
   script:
-    - go-licenses save . --save_path=library_licenses
-    - if: unix
-      then:
-        - BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-        - SHORT_COMMIT_HASH="$(curl -s "https://api.github.com/repos/kitops-ml/kitops/commits/v${{ version }}" | jq -r '.sha' | cut -c 1-7)"
-        - go build -v -o "$PREFIX"/bin/kit -ldflags="-s -w -X github.com/kitops-ml/kitops/pkg/lib/constants.Version=${{ version }} -X github.com/kitops-ml/kitops/pkg/lib/constants.BuildTime=${BUILD_TIME} -X github.com/kitops-ml/kitops/pkg/lib/constants.GitCommit=${SHORT_COMMIT_HASH}" -trimpath .
-        # generate shell completions
-        - if: build_platform == host_platform
-          then:
-            - mkdir -p "$PREFIX"/share/bash-completion/completions "$PREFIX"/share/fish/vendor_completions.d "$PREFIX"/share/zsh/site-functions
-            - '"$PREFIX"/bin/kit completion bash > "$PREFIX"/share/bash-completion/completions/kit'
-            - '"$PREFIX"/bin/kit completion fish > "$PREFIX"/share/fish/vendor_completions.d/kit.fish'
-            - '"$PREFIX"/bin/kit completion zsh  > "$PREFIX"/share/zsh/site-functions/_kit'
-    - if: win
-      then:
-        - for /f "usebackq delims=" %%T in (`powershell -Command "[DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ssZ')"`) do set BUILD_TIME=%%T
-        - for /f "usebackq delims=" %%T in (`powershell -Command "((Invoke-RestMethod 'https://api.github.com/repos/kitops-ml/kitops/commits/v${{ version }}').sha).Substring(0, 7)"`) do set SHORT_COMMIT_HASH=%%T
-        - go build -v -o "%LIBRARY_BIN%"\kit.exe -ldflags="-s -w -X github.com/kitops-ml/kitops/pkg/lib/constants.Version=${{ version }} -X github.com/kitops-ml/kitops/pkg/lib/constants.BuildTime=%BUILD_TIME% -X github.com/kitops-ml/kitops/pkg/lib/constants.GitCommit=%SHORT_COMMIT_HASH%" -trimpath .
-        # generate shell completions
-        - if: build_platform == host_platform
-          then:
-            - mkdir "%LIBRARY_PREFIX%"\share\bash-completion\completions
-            - mkdir "%LIBRARY_PREFIX%"\share\fish\vendor_completions.d
-            - mkdir "%LIBRARY_PREFIX%"\share\zsh\site-functions
-            - '"%LIBRARY_BIN%"\kit.exe completion bash > "%LIBRARY_PREFIX%"\share\bash-completion\completions\kit'
-            - '"%LIBRARY_BIN%"\kit.exe completion fish > "%LIBRARY_PREFIX%"\share\fish\vendor_completions.d\kit.fish'
-            - '"%LIBRARY_BIN%"\kit.exe completion zsh  > "%LIBRARY_PREFIX%"\share\zsh\site-functions\_kit'
+    interpreter: nu
+    content:
+      - let prefix = $env.LIBRARY_PREFIX? | default $env.PREFIX
+      # build main app and generate license data
+      - let build_time = date now | format date '%Y-%m-%dT%H:%M:%SZ'
+      - let short_commit_hash = (http get https://api.github.com/repos/kitops-ml/kitops/commits/v${{ version }}).sha | str substring 0..6
+      - if: win
+        then: let exe_name = 'kit.exe'
+        else: let exe_name = 'kit'
+      - ^go build
+        -o ($prefix)/bin/($exe_name)
+        -v
+        -ldflags=$'-s -w -X github.com/kitops-ml/kitops/pkg/lib/constants.Version=${{ version }} -X github.com/kitops-ml/kitops/pkg/lib/constants.BuildTime=($build_time) -X github.com/kitops-ml/kitops/pkg/lib/constants.GitCommit=($short_commit_hash)'
+        -trimpath
+        .
+      - ^go-licenses save . --save_path=library_licenses
+      # generate shell completions
+      - if: build_platform == host_platform
+        then:
+          - mkdir ($prefix)/share/bash-completion/completions ($prefix)/share/fish/vendor_completions.d ($prefix)/share/zsh/site-functions
+          - ^kit completion bash | save ($prefix)/share/bash-completion/completions/kit
+          - ^kit completion fish | save ($prefix)/share/fish/vendor_completions.d/kit.fish
+          - ^kit completion zsh  | save ($prefix)/share/zsh/site-functions/_kit
 
 requirements:
   build:
     - ${{ compiler("go-nocgo") }}
     - go-licenses
+    - nushell
 
 tests:
   - script:
